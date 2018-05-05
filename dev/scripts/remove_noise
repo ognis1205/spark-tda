@@ -1,0 +1,53 @@
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+import os
+import sys
+import pandas as pd
+from optparse import OptionParser
+
+
+def parse():
+    parser = OptionParser()
+    parser.add_option(
+        "-r", "--threshold-ratio",
+        dest="threshold_ratio",
+        default="0.001",
+        metavar="RATIO",
+        help="specifies population threshold ratio which determines whether a cluster is a noise or not"
+    )
+    options, args = parser.parse_args()
+    options.threshold_ratio = float(options.threshold_ratio)
+    return options, args, parser
+
+
+def main(argv=None):
+    pd.options.mode.chained_assignment = None
+    options, args, _ = parse()
+    for arg in args:
+        filename, extension = os.path.splitext(arg)
+        df = pd.read_csv(
+            os.path.join(os.getcwd(), arg),
+            delim_whitespace=True,
+            header=None
+        )
+        df.columns = ['x', 'y', 'c']
+        threshold = len(df.index) * options.threshold_ratio
+        hist = df.groupby('c').size().reset_index(name='counts')
+        clusters = dict((c, i) for i, c in enumerate(hist.loc[hist['counts'] > threshold, 'c']))
+        denoised = df.loc[df['c'].isin(clusters.keys())]
+        denoised['c'] = denoised['c'].map(clusters) + 1
+        denoised.to_csv(
+            '{}-denoised{}{}'.format(
+                os.path.join(os.getcwd(), filename),
+                options.threshold_ratio,
+                extension
+            ),
+            sep='\t',
+            encoding='utf-8',
+            header=False,
+            index=False
+        )
+
+
+if __name__ == '__main__':
+    main(sys.argv)

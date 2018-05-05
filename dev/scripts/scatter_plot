@@ -1,0 +1,81 @@
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+import os
+import sys
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+from optparse import OptionParser
+
+
+def parse():
+    parser = OptionParser()
+    parser.add_option(
+        "-c", "--color-map",
+        dest="color_map",
+        default="gnuplot",
+        metavar="COLORMAP",
+        help="specifies output colormap"
+    )
+    parser.add_option(
+        "-s", "--marker-size",
+        dest="marker_size",
+        default="5",
+        metavar="SIZE",
+        help="specifies marker size"
+    )
+    parser.add_option(
+        "-e", "--edge-color",
+        default="none",
+        dest="edge_color",
+        metavar="EDGECOLOR",
+        help="specifies edge color"
+    )
+    parser.add_option(
+        "-t", "--ticks",
+        action="store_true",
+        dest="ticks",
+        help="specifies ticks are printed or not"
+    )
+    options, args = parser.parse_args()
+    options.marker_size = int(options.marker_size)
+    return options, args, parser
+
+
+def discrete_cmap(N, base_cmap=None):
+    base = plt.cm.get_cmap(base_cmap)
+    color_list = base(np.linspace(0, 1, N))
+    cmap_name = base.name + str(N)
+    return base.from_list(cmap_name, color_list, N)
+
+
+def main(argv=None):
+    options, args, _ = parse()
+    for arg in args:
+        filename, extension = os.path.splitext(arg)
+        df = pd.read_csv(
+            os.path.join(os.getcwd(), arg),
+            delim_whitespace=True,
+            header=None
+        )
+        df.columns = ['x', 'y', 'c']
+        N = df['c'].max()
+        df['c'] = df['c'].apply(lambda x: x - 1)
+        plt.scatter(df['x'], df['y'], c=df['c'],
+                    cmap=discrete_cmap(N, options.color_map),
+                    s = options.marker_size,
+                    edgecolor=options.edge_color
+        )
+        plt.xlabel('X')
+        plt.ylabel('Y')
+        plt.grid(True)
+        if options.ticks:
+            plt.colorbar(ticks=range(N))
+        else:
+            plt.colorbar(ticks=[])
+        plt.clim(-0.5, N - 0.5)
+        plt.savefig('{}.png'.format(os.path.join(os.getcwd(), filename)))
+
+
+if __name__ == '__main__':
+    main(sys.argv)

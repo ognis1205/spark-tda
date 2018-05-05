@@ -1,0 +1,46 @@
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+import os
+import sys
+import pandas as pd
+from optparse import OptionParser
+
+
+def parse():
+    parser = OptionParser()
+    parser.add_option(
+        "-f", "--fraction",
+        dest="fraction",
+        default="0.25",
+        metavar="FRACTION",
+        help="specifies the fraction of axis items to return. "
+    )
+    options, args = parser.parse_args()
+    options.fraction = float(options.fraction)
+    return options, args, parser
+
+
+def main(argv=None):
+    options, args, _ = parse()
+    for arg in args:
+        filename, extension = os.path.splitext(arg)
+        df = pd.read_csv(
+            os.path.join(os.getcwd(), arg),
+#            delim_whitespace=True,
+            header=None
+        )
+        sampled = df.sample(frac=options.fraction, replace=True)
+        sampled.to_csv(
+            '{}-sampled{}'.format(
+                os.path.join(os.getcwd(), filename),
+                extension
+            ),
+            sep='\t',
+            encoding='utf-8',
+            header=False,
+            index=False
+        )
+
+
+if __name__ == '__main__':
+    main(sys.argv)
