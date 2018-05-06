@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/ognis1205/spark-tda.svg?branch=master)](https://travis-ci.org/ognis1205/spark-tda)
 [![codecov.io](https://codecov.io/gh/ognis1205/spark-tda/coverage.svg?branch=master)](https://codecov.io/gh/ognis1205/spark-tda?branch=master)
+[![Join the chat at https://gitter.im/ognis1205/spark-tda](https://badges.gitter.im/ognis1205/spark-tda.svg)](https://gitter.im/ognis1205/spark-tda?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 The scalable topological data analysis package for [Apache Spark](http://spark.apache.org/). This project aims to
 implement the following features:
@@ -23,11 +24,10 @@ Apache Spark, hence you cannot expect that this package is ready for production 
 
 ### Mapper
 
-2-skeltons of Reeb Diagram of MNIST (40 intervals)          | 2-skeltons of Reeb Diagram of MNIST (20 intervals)
-:----------------------------------------------------------:|:----------------------------------------------------------:
-12,000 images, 784 dimensions                               | 12,000 images, 784 dimensions
-colored by the 1st primcipal component                      | colored by the 1st primcipal component
-![](./data/mnist/mnist-sampled-l40-k20-l0.5-c0.4-i0.05.png) | ![](./data/mnist/mnist-sampled-l20-k20-l0.5-c0.4-i0.05.png)
+2-skeltons of Reeb Diagram of MNIST (40 intervals)                    | 2-skeltons of Reeb Diagram of MNIST (20 intervals)
+:--------------------------------------------------------------------:|:-------------------------------------------------------------------:
+12,000 images clustered in 784 dimensions without any projection loss | 12,000 images clustered in 784 dimensions witout any projection loss
+![](./data/mnist/mnist-sampled-l40-k20-l0.5-c0.4-i0.05.png)           | ![](./data/mnist/mnist-sampled-l20-k20-l0.5-c0.4-i0.05.png)
 
 # Requirements
 
@@ -40,7 +40,7 @@ To run the unit tests, run `sbt test` from the project home directory. This proj
 [sbt-spark-package](https://github.com/databricks/sbt-spark-package) plugin, which provides the 'spPublish' and
 'spPublishLocal' task. We recommend users to use this library with Apache Spark including the dependencies by
 supplying a comma-delimited list of Maven coordinates with `--packages` and download the package from the locally
-repository or official [Spark Packages](https://spark-packages.org/) repository.
+repository or official [Spark Packages](https://spark-packages.org/package/ognis1205/spark-tda) repository.
 
 ### The package can be published locally with:
 
@@ -48,7 +48,7 @@ repository or official [Spark Packages](https://spark-packages.org/) repository.
 $ sbt spPublishLocal
 ```
 
-### The package can be published to [Spark Packages](https://spark-packages.org/) with (requires authentication and authorization):
+### The package can be published to [Spark Packages](https://spark-packages.org/package/ognis1205/spark-tda) with (requires authentication and authorization):
 
 ```bash
 $ sbt spPublish
@@ -67,11 +67,9 @@ $ spark-shell --packages ognis1205:spark-tda:0.0.1-SNAPSHOT-spark2.2-s_2.11
 
 ### Mapper
 
-- [x] Write README
-- [ ] Publish to [Spark Packages](https://spark-packages.org/)
-- [ ] Support CI
 - [ ] Write Wiki
 - [ ] Implement Python APIs
+- [ ] Publish to [Spark Packages](https://spark-packages.org/package/ognis1205/spark-tda)
 - [ ] Benchmark
 - [ ] Consider using [GraphFrames](https://github.com/graphframes/graphframes) instead of plain GraphX
 - [ ] Implement some useful filter functions, e.g., Gaussian Density, Graph Laplacian, etc as transformers
