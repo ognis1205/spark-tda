@@ -3,7 +3,7 @@ scala:
   - 2.11.4
 jdk:
   - oraclejdk8
-  - openjdk7
+  - openjdk8
 sudo: false
 cache:
   directories:
@@ -11,7 +11,7 @@ cache:
     - $HOME/.sbt/boot/
 script:
   - sbt -jvm-opts travis/jvmopts.compile compile
-  - sbt -jvm-opts travis/jvmopts.test coverage core/test coverageReport
+  - sbt -jvm-opts travis/jvmopts.test coverage test coverageReport
   - sbt -jvm-opts travis/jvmopts.test scalastyle
   - find $HOME/.sbt -name "*.lock" | xargs rm
   - find $HOME/.ivy2 -name "ivydata-*.properties" | xargs rm
