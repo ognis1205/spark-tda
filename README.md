@@ -1,5 +1,7 @@
 # SparkTDA
 
+[![Join the chat at https://gitter.im/spark-tda/Lobby](https://badges.gitter.im/spark-tda/Lobby.svg)](https://gitter.im/spark-tda/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 [![Build Status](https://travis-ci.org/ognis1205/spark-tda.svg?branch=master)](https://travis-ci.org/ognis1205/spark-tda)
 [![codecov.io](https://codecov.io/gh/ognis1205/spark-tda/coverage.svg?branch=master)](https://codecov.io/gh/ognis1205/spark-tda?branch=master)
 
