@@ -1,5 +1,8 @@
 # SparkTDA
 
+[![Build Status](https://travis-ci.org/ognis1205/spark-tda.svg?branch=master)](https://travis-ci.org/ognis1205/spark-tda)
+[![codecov.io](https://codecov.io/gh/ognis1205/spark-tda/coverage.svg?branch=master)](https://codecov.io/gh/ognis1205/spark-tda?branch=master)
+
 The scalable topological data analysis package for [Apache Spark](http://spark.apache.org/). This project aims to
 implement the following features:
 
