@@ -7,8 +7,8 @@
 The scalable topological data analysis package for [Apache Spark](http://spark.apache.org/). This project aims to
 implement the following features:
 
-- [x] [Scalable Mapper Implemented as Reeb Diagrams, i.e., Reeb Cosheaves]()
-- [x] [Scalable Mapper Implementation]()
+- [x] [Scalable Mapper Implemented as Reeb Diagrams, i.e., Reeb Cosheaves](https://github.com/ognis1205/spark-tda/wiki/Mapper)
+- [x] [Scalable Mapper Implementation](https://github.com/ognis1205/spark-tda/wiki/Mapper)
 - [ ] Scalable Multiscale Mapper Implementation
 - [ ] Scalable Tower Computation for Multiscale Mapper
 - [ ] Scalable Persistent Homology Computation on Top of Apache Spark
@@ -24,7 +24,7 @@ Apache Spark, hence you cannot expect that this package is ready for production 
 
 ### Mapper
 
-2-skeltons of Reeb Diagram of MNIST (40 intervals)                    | 2-skeltons of Reeb Diagram of MNIST (20 intervals)
+2-skeltons of Reeb Diagram of MNIST (40 intervals on the 1st primcipal component with 50% overlap) | 2-skeltons of Reeb Diagram of MNIST (20 intervals)
 :--------------------------------------------------------------------:|:-------------------------------------------------------------------:
 12,000 images clustered in 784 dimensions without any projection loss | 12,000 images clustered in 784 dimensions witout any projection loss
 ![](./data/mnist/mnist-sampled-l40-k20-l0.5-c0.4-i0.05.png)           | ![](./data/mnist/mnist-sampled-l20-k20-l0.5-c0.4-i0.05.png)
