@@ -15,6 +15,7 @@
  */
 package org.apache.spark.ml.feature
 
+import scala.reflect.ClassTag
 import scala.collection.mutable.ArrayBuffer
 import scala.util.hashing.byteswap64
 import breeze.linalg.DenseVector
@@ -693,11 +694,10 @@ class ReebDiagramModel private[ml] (override val uid: String,
     // Construct Ertoes graph.
     val ertoezGraph =
       toErtoezGraph(kNNs, $(k), $(linkThresholdRatio), $(coreThresholdRatio))
+    // Get the column number of cover ids to handle noise data.
+    val indexOfCoverId = dataset.toDF.schema.fieldIndex($(coverCol))
     dataset.sqlContext.createDataFrame(
-      dataset
-        .toDF()
-        .rdd
-        .zipWithIndex()
+      dataset.toDF.rdd.zipWithIndex
         .map {
           case (row, i) =>
             (i, row)
@@ -705,7 +705,9 @@ class ReebDiagramModel private[ml] (override val uid: String,
         .leftOuterJoin(ertoezGraph.connectedComponents.vertices)
         .map {
           case (i, (row, clusterId)) =>
-            Row.fromSeq(row.toSeq :+ clusterId.getOrElse(i))
+            Row.fromSeq(
+              row.toSeq :+ clusterId.getOrElse(
+                -(row.getInt(indexOfCoverId).toLong + 1L)))
         },
       transformSchema(dataset.schema)
     )
@@ -886,14 +888,27 @@ object ReebDiagramModel {
       e.attr > linkThreshold && e.srcAttr.density > coreThreshold
     def isBoundary(e: EdgeTriplet[VertexAttr, Double]): Boolean =
       e.attr > linkThreshold && (e.srcAttr.nearestNeighbor == e.dstId && e.dstAttr.density > coreThreshold)
-    sharedNearestNeighbors
+    def removeIsolatedVertices[VD: ClassTag, ED: ClassTag](
+        graph: Graph[VD, ED]): Graph[VD, ED] =
+      graph.filter[(VD, Boolean), ED](
+        g =>
+          g.outerJoinVertices[Int, (VD, Boolean)](graph.degrees) {
+            (_, attr, degree) =>
+              (attr, degree.isDefined)
+        },
+        vpred = (v, attr) => attr._2
+      )
+    val corePoints = sharedNearestNeighbors
       .outerJoinVertices(nearestNeighbors) {
         case (i, attr, nearestNeighbor) =>
-          val (nearestNeighborId, density) = nearestNeighbor.getOrElse((i, 0))
+          val (nearestNeighborId, density) =
+            nearestNeighbor.getOrElse((i, 0))
           VertexAttr(attr.knn, nearestNeighborId, density)
       }
       .subgraph(
         epred = (e => { isCorePoint(e) || isBoundary(e) })
       )
+      .cache()
+    removeIsolatedVertices(corePoints)
   }
 }

@@ -104,7 +104,7 @@ def computeMapper(
 
   val filename = pathToTextFile.split("\\.")(0)
 
-  val outputFilename = s"$filename-k${quantity}-l${linkThresholdRatio}-c${coreThresholdRatio}-i${topTreeRatio}.gexf"
+  val outputFilename = s"$filename-k${quantity}-s${numSplits}-l${linkThresholdRatio}-c${coreThresholdRatio}-i${topTreeRatio}.gexf"
 
   val points = sc.textFile(pathToTextFile)
     .map {
@@ -135,8 +135,8 @@ def computeMapper(
     .setLinkThresholdRatio(linkThresholdRatio)
     .setCoreThresholdRatio(coreThresholdRatio)
     .setTopTreeSize((topTreeRatio * cardinality).toInt)
-    .setTopTreeLeafSize(50)
-    .setSubTreeLeafSize(50)
+    .setTopTreeLeafSize(1000)
+    .setSubTreeLeafSize(100)
     .setIdCol("id")
     .setCoverCol(cover.getOutputCol)
     .setFeaturesCol("features")
@@ -156,9 +156,9 @@ def computeMapper(
   val clusters = reebDiagram
     .groupBy("cluster_id")
     .count
-    .filter("count > 1")
     .select("cluster_id")
     .collect
+    .filter(row => row.getLong(0) >= 0)
     .map(row => row.getLong(0))
 
   println("REMOVE NOISES...")
@@ -167,20 +167,23 @@ def computeMapper(
 
   println("COLLECT DOMINANT LABELS IN EACH CLUSTERS...")
   val labels = scala.collection.mutable.Map[Long, String]()
+  val histgram = filtered
+    .groupBy("cluster_id", "label")
+    .count
+    .cache
   for ((cluster, i) <- clusters.zipWithIndex) {
     println(s"${i + 1} / ${clusters.length} CLUSTER ID: $cluster")
-    val histgram = filtered
+    val partialHistogram = histgram
       .where(s"cluster_id = $cluster")
-      .groupBy("label")
-      .count
-    histgram.show()
-    val numLabels = histgram.count
-    val clusterSize = histgram
+      .select("label", "count")
+    partialHistogram.show()
+    val numLabels = partialHistogram.count
+    val clusterSize = partialHistogram
       .agg(sum("count"))
       .first
       .getLong(0)
     val threshold = clusterSize.toDouble / numLabels.toDouble
-    val label = histgram
+    val label = partialHistogram
       .filter(s"count >= ${threshold.toInt}")
       .select("label")
       .collect
