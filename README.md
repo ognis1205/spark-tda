@@ -74,6 +74,13 @@ $ spark-shell --packages ognis1205:spark-tda:0.0.1-SNAPSHOT-spark2.2-s_2.11
 - [ ] Consider using [GraphFrames](https://github.com/graphframes/graphframes) instead of plain GraphX
 - [ ] Implement some useful filter functions, e.g., Gaussian Density, Graph Laplacian, etc as transformers
 
+# Related Softwares $ Projects
+
+1. [Python Mapper](http://danifold.net/mapper/index.html)
+2. [TDAMapper (R)](https://github.com/paultpearson/TDAmapper/)
+3. [Spark Mapper (Spark)](https://github.com/log0ymxm/spark-mapper)
+4. [KeplerMapper (Python with GUI)](https://github.com/MLWave/kepler-mapper)
+
 # References
 
 ### Mapper
@@ -83,6 +90,7 @@ $ spark-shell --packages ognis1205:spark-tda:0.0.1-SNAPSHOT-spark2.2-s_2.11
 3. [T. K. Dey, F. Memoli, Y. Wang (2015), Mutiscale Mapper: A Framework for Topological Summarization of Data and Maps, arXiv 2015](https://arxiv.org/abs/1504.03763)
 4. [E. Munch, B. Wang (2015). Convergence between Categorical Representations of Reeb Space and Mapper, arXiv 2015](https://arxiv.org/abs/1512.04108)
 5. [E. Munch, B. Wang (2015). Reeb Space Approximation with Guarantees, The 25th Fall Workshop on Computational Geometry 2015.](https://www.cse.buffalo.edu/fwcg2015/assets/pdf/FWCG_2015_paper_2.pdf)
+6. [H. E. Kim (2015). Evaluating Ayasdi's Topological Data Analysis for Big Data, Master Thesis, Goethe University Frankfurt 2015.](http://www.bigdata.uni-frankfurt.de/wp-content/uploads/2015/10/Evaluating-Ayasdi’s-Topological-Data-Analysis-For-Big-Data_HKim2015.pdf)
 
 ### KNN/ANN/SNN
 
