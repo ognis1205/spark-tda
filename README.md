@@ -74,7 +74,7 @@ $ spark-shell --packages ognis1205:spark-tda:0.0.1-SNAPSHOT-spark2.2-s_2.11
 - [ ] Consider using [GraphFrames](https://github.com/graphframes/graphframes) instead of plain GraphX
 - [ ] Implement some useful filter functions, e.g., Gaussian Density, Graph Laplacian, etc as transformers
 
-# Related Softwares $ Projects
+# Related Softwares & Projects
 
 1. [Python Mapper](http://danifold.net/mapper/index.html)
 2. [TDAMapper (R)](https://github.com/paultpearson/TDAmapper/)
