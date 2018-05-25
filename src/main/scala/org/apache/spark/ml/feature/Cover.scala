@@ -26,6 +26,7 @@ import org.apache.spark.ml.param.{
   DoubleParam,
   BooleanParam,
   ParamValidators,
+  Param,
   Params,
   ParamMap
 }
@@ -86,39 +87,51 @@ private[feature] trait CoverParams
     * Default: 10
     * @group param
     */
-  val numSplits = new IntParam(this,
-                               "numSplits",
-                               "number of interval splits (> 0)",
-                               ParamValidators.gt(0))
+  final val numSplits = new IntParam(this,
+                                     "numSplits",
+                                     "number of interval splits (> 0)",
+                                     ParamValidators.gt(0))
 
   /** @group getParam */
-  def getNumSplits: Int = $(numSplits)
+  final def getNumSplits: Int = $(numSplits)
 
   /**
     * Overlap ratio of each interval. Should be greater than 0.0.
     * Default: 0.1
     * @group param
     */
-  val overlapRatio = new DoubleParam(this,
-                                     "overlapRatio",
-                                     "overlap ration of each interval (> 0)",
-                                     ParamValidators.gt(0))
+  final val overlapRatio = new DoubleParam(
+    this,
+    "overlapRatio",
+    "overlap ration of each interval (> 0)",
+    ParamValidators.gt(0))
 
   /** @group getParam */
-  def getOverlapRatio: Double = $(overlapRatio)
+  final def getOverlapRatio: Double = $(overlapRatio)
 
   /**
     * If this value is set to be true, the resulting `DataFrame` will be exploded with the specified output column.
     * Default: false
     * @group param
     */
-  val exploding = new BooleanParam(
+  final val exploding = new BooleanParam(
     this,
     "exploding",
     "If True, the resulting DataFrame will be exploded with the specified output column.")
 
   /** @group getParam */
-  def getExploding: Boolean = $(exploding)
+  final def getExploding: Boolean = $(exploding)
+
+  /**
+    * Param for data identifier column name.
+    * Default: "id"
+    * @group param
+    */
+  final val idCol: Param[String] =
+    new Param[String](this, "idCol", "data identifier column name")
+
+  /** @group getParam */
+  final def getIdCol: String = $(idCol)
 
   /**
     * Validates and transforms the input schema.
@@ -134,7 +147,7 @@ private[feature] trait CoverParams
     if ($(exploding)) {
       val newSchema =
         SchemaUtils.appendColumn(schema, $(outputCol), IntegerType)
-      SchemaUtils.appendColumn(newSchema, COL_ID, LongType)
+      SchemaUtils.appendColumn(newSchema, $(idCol), LongType)
     } else {
       SchemaUtils.appendColumn(schema,
                                $(outputCol),
@@ -254,7 +267,10 @@ class Cover(override val uid: String)
 
   def this() = this(Identifiable.randomUID("cover"))
 
-  setDefault(numSplits -> 10, overlapRatio -> 0.1, exploding -> false)
+  setDefault(numSplits -> 10,
+             overlapRatio -> 0.1,
+             exploding -> false,
+             idCol -> "id")
 
   /** @group setParam */
   def setInputCols(values: String*): this.type = setInputCols(values.toArray)
@@ -273,6 +289,9 @@ class Cover(override val uid: String)
 
   /** @group setParam */
   def setExploding(value: Boolean): this.type = set(exploding, value)
+
+  /** @group setParam */
+  def setIdCol(value: String): this.type = set(idCol, value)
 
   /**
     * Fits a model to the input data.
@@ -350,6 +369,9 @@ class CoverModel private[ml] (override val uid: String,
   /** @group setParam */
   def setExploding(value: Boolean): this.type = set(exploding, value)
 
+  /** @group setParam */
+  def setIdCol(value: String): this.type = set(idCol, value)
+
   /**
     * Instanciates an open cover of the specified min-max arrays.
     */
@@ -382,7 +404,7 @@ class CoverModel private[ml] (override val uid: String,
                                     assignment(vectorizeUDF(struct(args: _*))))
     if ($(exploding))
       result
-        .withColumn(COL_ID, monotonically_increasing_id())
+        .withColumn($(idCol), monotonically_increasing_id())
         .withColumn($(outputCol), explode(col(s"${$(outputCol)}_${uid}")))
         .drop(s"${$(outputCol)}_${uid}")
     else result.withColumnRenamed(s"${$(outputCol)}_${uid}", $(outputCol))
@@ -419,9 +441,6 @@ object CoverModel extends MLReadable[CoverModel] with Assembler {
 
   /** Holds column name for maximum values. */
   private val COL_MAX: String = "max"
-
-  /** Holds columns name for data identifier. */
-  val COL_ID: String = "id"
 
   /** [[MLWriter]] for [[CoverModel]]. */
   private[CoverModel] class CoverModelWriter(instance: CoverModel)

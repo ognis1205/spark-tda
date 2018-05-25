@@ -137,7 +137,7 @@ def computeMapper(
     .setTopTreeSize((topTreeRatio * cardinality).toInt)
     .setTopTreeLeafSize(1000)
     .setSubTreeLeafSize(100)
-    .setIdCol("id")
+    .setIdCol(cover.getIdCol)
     .setCoverCol(cover.getOutputCol)
     .setFeaturesCol("features")
     .setOutputCol("cluster_id")
