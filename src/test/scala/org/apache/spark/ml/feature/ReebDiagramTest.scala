@@ -38,6 +38,17 @@ class ReebDiagramTest
     .setInputCols("double", "integer")
     .setOutputCol("cover_id")
 
+  property("argument topTreeSize must be positive") {
+    intercept[IllegalArgumentException] {
+      val reeb = new ReebDiagram()
+//        .setIdCol("id")
+//        .setCoverCol("cover_id")
+//        .setFeaturesCol("vector")
+//        .setOutputCol("cluster_id")
+        .setTopTreeSize(0)
+    }
+  }
+
   property("placeholder") {
     val reeb = new ReebDiagram()
       .setK(15)
